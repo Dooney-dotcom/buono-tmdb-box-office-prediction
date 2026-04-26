@@ -30,7 +30,7 @@ pip install --upgrade pip
 
 echo "Installing libraries..."
 
-pip install pandas matplotlib numpy seaborn scikit-learn xgboost wordcloud
+pip install pandas matplotlib numpy seaborn scikit-learn xgboost wordcloud lightgbm catboost
 
 echo "Installation completed successfully!"
 
