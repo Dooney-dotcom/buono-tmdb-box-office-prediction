@@ -8,7 +8,7 @@ This repository contains the project work developed for the **Machine Learning a
 ## References & Tools
 * **Competition**: [Kaggle TMDB Box Office Prediction](https://www.kaggle.com/competitions/tmdb-box-office-prediction)
 * **Institution**: Alma Mater Studiorum – Università di Bologna
-* **Stack**: Python (`pandas`, `matplotlib`, `numpy`, `sklearn`, `seaborn`, `xgboost`, `ast`, `wordcloud`)
+* **Stack**: Python (`pandas`, `matplotlib`, `numpy`, `sklearn`, `seaborn`, `xgboost`, `ast`, `wordcloud`, `lightgbm`, `catboost`)
 
 ---
 
@@ -23,30 +23,67 @@ The film industry is a high-stakes business where predicting a movie's financial
 
 ---
 
-### Results
-The models were evaluated based on their ability to minimize RMSLE
+### Project Structure
+The project is organized into two main Jupyter notebooks:
 
-| Model | RMSLE | $R^2$ Score |
-| :--- | :---: | :---: |
-| **Random Forest Regressor** | 1.999 | 0.552 |
-| **XGBoost Regressor** | **1.928** | **0.583** |
+#### 1. Exploratory Data Analysis (EDA)
+- Dataset inspection
+- Distribution analysis of target and features
+- Correlation analysis and feature relationships
+- Visualization of categorical variables (genres, production companies, cast, ...)
 
-As shown in the evaluation, the **XGBoost Regressor** provided superior performance, achieving a lower error and a higher correlation with the actual revenue data.
+#### 2. Feature Engineering & Model Tuning
+- Parsing nested JSON-like fields (genres, cast, crew, production companies)
+- Handling missing values and skewed distributions
+- Feature transformations (log scaling, encoding, aggregation)
+- Temporal feature extraction (release year, month, seasonality)
+- Feature selection and dimensionality reduction
+- Baseline models
+- Model training and hyperparameter optimization (Random Forest, XGBoost, LightGBM, CatBoost)
+- Final prediction and submission generation
+
+```project-root/
+│
+├── data/
+│   ├── train.csv
+│   ├── test.csv
+│   ├── sample_submission.csv
+│   └── submission.csv
+│
+├── src/
+│   ├── eda.ipynb
+│   └── prediction.ipynb
+│   └── utils.py
+│
+├── setup.sh
+└── README.md
+```
+
 
 ---
 
-### Project Structure
-The notebook follows a standard machine learning pipeline:
+### Results
 
-1.  **Data Loading and Overview**: Initial inspection of the Kaggle dataset.
-2.  **EDA (Exploratory Data Analysis)**: Visualizing the relationship between features and revenue, and analyzing categorical trends.
-3.  **Feature Engineering**: 
-    * Parsing nested dictionaries (Genres, Production Companies, Cast, ...).
-    * Handling missing values and skewed distributions.
-    * Date feature extraction (Release year, month, and seasonality).
-    * Selecting the best K features to avoid overfitting
-4.  **Model Tuning**: Comparing **Random Forest** and **XGBoost** through hyperparameter optimization.
-5.  **Prediction and Submit**: Generating the final output for the competition leaderboard.
+The models were evaluated using both **R² score** and **RMSLE (Root Mean Squared Logarithmic Error)**.
+
+| Model | RMSLE | R² Score |
+| :--- | :---: | :---: |
+| Baseline - Dummy Mean | 2.991 | -0.004 |
+| Baseline - Dummy Median | 3.027 | -0.028 |
+| Random Forest Regressor | 2.049 | 0.529 |
+| LightGBM | 2.039 | 0.533 |
+| XGBoost | 1.978 | 0.560 |
+| CatBoost | **1.961** | **0.568** |
+
+#### Key Findings
+
+- The baseline models (mean and median predictors) perform poorly, confirming that the problem is non-trivial and requires non-linear modeling.
+- All gradient boosting models significantly outperform Random Forest, both in terms of RMSLE and R².
+- **CatBoost achieves the best overall performance**, obtaining:
+  - the lowest RMSLE (**1.961**)
+  - the highest R² score (**0.568**)
+
+This indicates that CatBoost provides the best trade-off between predictive accuracy and generalization on this dataset, likely due to its strong handling of categorical-like feature interactions and robust gradient boosting implementation.
 
 ---
 
@@ -89,4 +126,4 @@ python -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install pandas numpy scikit-learn xgboost matplotlib seaborn wordcloud
+pip install pandas numpy scikit-learn xgboost matplotlib seaborn wordcloud lightgbm catboost
